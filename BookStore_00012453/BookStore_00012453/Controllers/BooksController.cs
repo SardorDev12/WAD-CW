@@ -20,9 +20,22 @@ namespace BookStore_00012453.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-              return View(await _context.Book.ToListAsync());
+            if(_context.Book == null)
+            {
+                return Problem("Entity set in BookStore is null.");
+            }
+
+            var books = from m in _context.Book
+                        select m;
+
+            if (String.IsNullOrEmpty(searchString))
+            {
+                books = books.Where(s => s.Title.Contains(searchString));
+            }
+
+            return View(await books.ToListAsync());
         }
 
         // GET: Books/Details/5
